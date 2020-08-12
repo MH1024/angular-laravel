@@ -2,8 +2,12 @@
 
     #auth-panel {
         padding: 24px;
+        height: 100%;
         .card-content {
             max-width: 512px !important;
+            .title { 
+                padding-left: 8px;
+            }
         }
     }
 }
