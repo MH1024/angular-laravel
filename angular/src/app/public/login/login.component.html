@@ -1,0 +1,33 @@
+<form class="login-form" name="loginForm" [formGroup]="loginForm" novalidate fxLayout="column" fxLayoutAlign="center start">
+
+    <mat-form-field appearance="outline" class="input-field">
+        <mat-label>Email</mat-label>
+        <input matInput placeholder="Email" formControlName="username"
+               required>
+        <mat-icon matSuffix >mail</mat-icon>
+        <mat-error *ngIf="loginForm.controls.username.hasError('required')">
+            Email is required
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="input-field" appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" placeholder="Password"
+               formControlName="password" required>
+        <mat-icon matSuffix >vpn_key</mat-icon>
+        <mat-error *ngIf="loginForm.controls.password.hasError('required')">
+            Password is required
+        </mat-error>
+        <mat-error *ngIf="loginForm.controls.username.hasError('authFail')">
+            Username or Password is incorrect
+        </mat-error>
+    </mat-form-field>
+    <div fxLayout="row" fxLayoutAlign="end end" class="input-field" >
+        <button mat-raised-button color="accent" class="submit-button" aria-label="LOGIN" (click)="login()"
+            >
+        Sign In
+        </button>
+    </div>
+    
+
+</form>

@@ -1,0 +1,56 @@
+<form class="register-form" name="registerForm" [formGroup]="registerForm" novalidate fxLayout="column" fxLayoutAlign="center start" >
+
+    <mat-form-field appearance="outline" class="input-field">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name">
+        <mat-icon matSuffix >account_circle</mat-icon>
+        <mat-error *ngIf="registerForm.controls.name.hasError('required')">
+            Name is required
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="input-field">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email">
+        <mat-icon matSuffix >mail</mat-icon>
+        <mat-error *ngIf="registerForm.controls.email.hasError('required')">
+            Email is required
+        </mat-error>
+        <mat-error *ngIf="!registerForm.controls.email.hasError('required') && registerForm.controls.email.hasError('email')">
+            Please enter a valid email address
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="input-field">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" placeholder="Password"
+               formControlName="password">
+        <mat-error *ngIf="registerForm.controls.password.hasError('required')">
+            Password is required
+        </mat-error>
+        <mat-error *ngIf="!registerForm.controls.password.hasError('required') && registerForm.controls.password.hasError('pattern')">
+            Password must be alphanumberic with minumum 8 characters.
+        </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="input-field">
+        <mat-label>Password (Confirm)</mat-label>
+        <input matInput type="password"
+               placeholder="Confirm Password"
+               formControlName="passwordConfirm">
+        <mat-error *ngIf="registerForm.controls.passwordConfirm.hasError('required')">
+            Confirm Password is required
+        </mat-error>
+        <mat-error *ngIf="registerForm.controls.passwordConfirm.hasError('passwordsNotMatch')">
+            Passwords are not match
+        </mat-error>
+    </mat-form-field>
+    <div fxLayout="row" fxLayoutAlign="end end" class="input-field" >
+        <button mat-raised-button color="accent" class="submit-button" aria-label="CREATE AN ACCOUNT"
+                [disabled]="registerForm.invalid"
+                (click)="register()"
+                >
+            CREATE AN ACCOUNT
+        </button>
+    </div>
+</form>

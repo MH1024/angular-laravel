@@ -1,0 +1,18 @@
+<div id="auth-panel" fxLayout="column" fxLayoutAlign="center center">
+    <mat-card class="card-content">
+        <mat-card-header>
+            <mat-card-title>Login/Register</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <mat-tab-group #tabs>
+              <mat-tab label="Login">
+                <app-login></app-login>
+              </mat-tab>
+              <mat-tab label="Register">
+               <app-register (goToLoginPanel)="setTabToLoginPanel()"></app-register>
+              </mat-tab>
+            </mat-tab-group>
+      
+          </mat-card-content>
+      </mat-card>
+</div>
