@@ -3,6 +3,7 @@ import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { AuthService } from 'src/app/shared/service/auth.service';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material';
+import { User } from 'src/app/models/user.model';
 
 @Component({
   selector: 'app-login',
@@ -28,29 +29,29 @@ export class LoginComponent implements OnInit {
   login() {
     if (this.loginForm.invalid) {
       return;
-  }
+    }
     const username = this.loginForm.get('username').value.trim();
     const password = this.loginForm.get('password').value.trim();
     if (username && password) {
         this.authService.login(username, password).subscribe(
             res => {
-                this.router.navigate(['/']);
+              console.log(res);
+                  if ( res && res['access_token']) {
+                      this.authService.user = new User();
+                      this.authService.setSession(res);
+                  }
+                this.router.navigate(['/main/home']);
 
             }, error => {
-                if (error && error.status_code && error.status_code === 422 ) {
-                    this.snackBar.open(
-                        'Invalid Input. Please Check', 'CLOSE', {
-                            duration: 3000,
-                            horizontalPosition: 'right',
-                            verticalPosition: 'top',
-                        });
-                }  else if (error && error.message) {
-                    this.snackBar.open(
-                        error.message, 'CLOSE', {
-                            duration: 3000,
-                            horizontalPosition: 'right',
-                            verticalPosition: 'top',
-                        });
+              console.log(error);
+              if (error && error.errors && Array.isArray(error.errors)) {
+                  const errorString = error.errors.reduce((a, b) => a + ',' + b, '');
+                  this.snackBar.open(
+                      errorString, 'CLOSE', {
+                          duration: 3000,
+                          horizontalPosition: 'right',
+                          verticalPosition: 'top',
+                      });
                 } else {
                     this.snackBar.open(
                         'Server Error', 'CLOSE', {

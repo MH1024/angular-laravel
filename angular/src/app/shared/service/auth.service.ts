@@ -79,15 +79,8 @@ export class AuthService implements Resolve<any> {
         return this.apiService.post('auth', 'update');
     }
 
-    public login(username: string, password: string) {
-        return this.apiService.post('auth', 'login', null, {'email': username, 'password': password}).pipe(map(
-            res => {
-                if ( res && res['access_token']) {
-                    this.user = new User();
-                    this.setSession(res);
-                }
-            }
-        ));
+    public login(username: string, password: string): Observable<any> {
+        return this.apiService.post('auth', 'login', null, {'email': username, 'password': password});
     }
 
 
@@ -102,7 +95,7 @@ export class AuthService implements Resolve<any> {
         // this.activeContentService.endActiveContent();
     }
 
-    private setSession(authResult) {
+    public setSession(authResult) {
         const expiresAt = moment.tz(authResult['expires_in'], 'Australia/Melbourne');
         const activeAt = moment.tz(authResult['refresh_expires_at'], 'Australia/Melbourne');
         localStorage.setItem('token', authResult['access_token']);

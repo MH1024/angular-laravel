@@ -34,29 +34,31 @@ export class RegisterComponent implements OnInit {
     const registerFormValue = this.registerForm.getRawValue();
     this.authService.register(registerFormValue).subscribe(
       (resp: any) => {
-          this.router.navigate(['/']);
+          this.router.navigate(['/public/login']);
           this.registerForm.reset();
           this.goToLoginPanel.emit('');
-          this.snackBar.open(resp.message, 'Dismiss', {
+          this.snackBar.open(resp, 'Dismiss', {
             duration: 5000,
             horizontalPosition: 'right',
             verticalPosition: 'top',
         });
       },
       error => {
-          if (error.message) {
-              this.snackBar.open(error.message, 'Dismiss', {
-                  duration: 5000,
+        if (error) {
+          this.snackBar.open(
+              error, 'CLOSE', {
+                  duration: 3000,
                   horizontalPosition: 'right',
                   verticalPosition: 'top',
               });
-          } else {
-              this.snackBar.open(error, 'Dismiss', {
-                  duration: 5000,
-                  horizontalPosition: 'right',
-                  verticalPosition: 'top',
-              });
-          }
+        } else {
+            this.snackBar.open(
+                'Server Error', 'CLOSE', {
+                    duration: 3000,
+                    horizontalPosition: 'right',
+                    verticalPosition: 'top',
+                });
+        }
       });
 
   }

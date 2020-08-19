@@ -3,7 +3,11 @@ import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
     {
-        path: '',
+        path: 'main',
+        loadChildren: './main/main.module#MainModule',
+    },
+    {
+        path: 'public',
         loadChildren: './public/public.module#PublicModule',
     }
 ];
