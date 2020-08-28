@@ -6,6 +6,8 @@ import { MaterialModule } from './material.module';
 import { AuthGuard } from './guard/auth.guard';
 import { CommonModule } from '@angular/common';
 import { PageNotFoundComponent } from './error/page-not-found/page-not-found.component';
+import { InternalServerErrorComponent } from './error/internal-server-error/internal-server-error.component';
+import { ErrorHandlerService } from './service/error-handler.service';
 
 @NgModule({
     imports: [
@@ -21,9 +23,10 @@ import { PageNotFoundComponent } from './error/page-not-found/page-not-found.com
         CommonModule,
         FormsModule,
         ReactiveFormsModule,
-        PageNotFoundComponent
+        PageNotFoundComponent,
+        InternalServerErrorComponent
     ],
-    declarations: [PageNotFoundComponent]
+    declarations: [PageNotFoundComponent, InternalServerErrorComponent]
 })
 export class SharedModule {
     static forRoot(): ModuleWithProviders {
@@ -32,6 +35,7 @@ export class SharedModule {
             providers: [
                 ApiService,
                 AuthGuard,
+                ErrorHandlerService
             ]
         };
     }

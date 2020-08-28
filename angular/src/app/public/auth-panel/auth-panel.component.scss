@@ -1,7 +1,11 @@
+$breakpoint-tablet: 768px;
+
 :host {
 
     #auth-panel {
-        padding: 24px;
+        @media (min-width: $breakpoint-tablet) {
+            padding: 24px;
+        }
         height: 100%;
         .card-content {
             max-width: 512px !important;

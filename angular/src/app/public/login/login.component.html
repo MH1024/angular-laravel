@@ -1,4 +1,10 @@
 <form class="login-form" name="loginForm" [formGroup]="loginForm" novalidate fxLayout="column" fxLayoutAlign="center start">
+    <div class="p-8 auth-error-msg" *ngIf="errorsFromServer && errorsFromServer !== {}">
+        <div class="message-box error" *ngIf="errorsFromServer.message" fxLayout="row" fxLayoutAlign="space-between center">
+            <div [innerHTML]="errorsFromServer.message"></div>
+            <mat-icon  class="close-notice" matTooltip="Close" (click)="closeErrorNotice()">close</mat-icon>
+        </div>
+    </div>
 
     <mat-form-field appearance="outline" class="input-field">
         <mat-label>Email</mat-label>

@@ -1,4 +1,4 @@
-import {HttpClient, HttpRequest, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpRequest, HttpErrorResponse, HttpHeaders, HttpEvent} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import { throwError, of } from 'rxjs';
@@ -91,32 +91,21 @@ export class ApiService {
             );
     }
 
-    private handleError(error): Observable<never> {
+    private handleError(error: HttpErrorResponse): Observable<HttpEvent<any>> {
 
-        let errorMessage;
+        let errorMessage: any;
         if (error.error instanceof ErrorEvent) {
-            // A client-side or network error occurred. Handle it accordingly.
-            console.error('An error occurred:', error.error.message);
-            errorMessage = error.error.message;
-        } else if (error.errors instanceof ErrorEvent) {
-            {
-                // The backend returned an unsuccessful response code.
-                // The response body may contain clues as to what went wrong,
-                console.error(
-                    `Backend returned code ${error.status}, ` +
-                    `body was: ${error.errors}`);
-                errorMessage = error.errors;
-            }
+            // client-side error
+            errorMessage = `Error: ${error.error.message}`;
         } else {
             // The backend returned an unsuccessful response code.
             // The response body may contain clues as to what went wrong,
             console.error(
                 `Backend returned code ${error.status}, ` +
-                `body was: ${error.error}`);
-            errorMessage = error;
+                `body was: ${error.error.message}`);
+            errorMessage = error.error;
         }
-
-        // return an observable with a user-facing error message
+              // return an observable with a user-facing error message
         return throwError(errorMessage);
     }
 }

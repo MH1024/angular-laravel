@@ -164,7 +164,7 @@ export class AuthService implements Resolve<any> {
     }
 
     register(formValue: any): Observable<any> {
-        return this.apiService.post('auth', 'register', null, formValue);
+        return this.apiService.post('auth', 'signup', null, formValue);
     }
 
     updatePassword(oldPassword: string, newPassword: string): Observable<any> {
