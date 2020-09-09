@@ -31,6 +31,9 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 # For Laravel Backend
 
+It is build from Laravel API Boilerplate as a "start kit". 
+* Laravel API Boilerplate - [francescomalatesta/laravel-api-boilerplate-jwt](https://github.com/francescomalatesta/laravel-api-boilerplate-jwt)
+which has JWT, api and cors added on.
 ## Before Install Project Dependencies
 
 Laravel utilizes Composer to manage its dependencies. make sure you install the composer first, or download a copy of the composer.phar. Once you have the PHAR archive, you can either keep it in your local project directory or move to usr/local/bin to use it globally on your system. On Windows, you can use the Composer Windows installer.

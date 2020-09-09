@@ -1,0 +1,98 @@
+
+    <mat-toolbar mat-dialog-title class="mat-primary m-0">
+        <mat-toolbar-row fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">{{dialogTitle}}</span>
+            <button mat-button class="mat-icon-button"
+                    (click)="dialogRef.close(false)"
+                    aria-label="Close dialog">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-toolbar-row>
+    </mat-toolbar>
+    <mat-dialog-content class="user-form-panel" >
+        <div class="p-8 auth-error-msg" *ngIf="errorsFromServer && errorsFromServer !== {}">
+            <div class="message-box error" *ngIf="errorsFromServer.message" fxLayout="row" fxLayoutAlign="space-between center">
+                <div [innerHTML]="errorsFromServer.message"></div>
+                <mat-icon  class="close-notice" matTooltip="Close" (click)="closeErrorNotice()">close</mat-icon>
+            </div>
+        </div>
+        <form [formGroup]="userInfoForm" novalidate>
+
+            <div class="" fxLayout="row" fxLayoutAlign="start start">
+
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Name</mat-label>
+                    <mat-icon matSuffix class="secondary-text">account_circle</mat-icon>
+                    <input name="name" formControlName="name" placeholder="Name" matInput required>
+                    <mat-error *ngIf="userInfoForm.controls.name.hasError('required')">
+                        Name is required.
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <div class="" fxLayout="row" fxLayoutAlign="start start">
+
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Email (for login)</mat-label>
+                    <mat-icon matSuffix class="secondary-text">mail</mat-icon>
+                    <input name="email" formControlName="email" placeholder="Email (for login)" matInput required>
+                    <mat-error *ngIf="userInfoForm.controls.email.hasError('required')">
+                        Email is required.
+                    </mat-error>
+                    <mat-error *ngIf="!userInfoForm.controls.email.hasError('required') && userInfoForm.controls.email.hasError('email')">
+                        Please enter a valid email address
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <div fxLayout="row" fxLayoutAlign="start start" *ngIf="action && action === 'edit'">
+                
+                <mat-checkbox (change)="changePasswordPanel()" formControlName="isChangePassword">Change Password</mat-checkbox>
+                
+            </div>
+            <div class="" fxLayout="row" fxLayoutAlign="start start">
+
+                <mat-form-field  appearance="outline" fxFlex>
+                    <mat-label>Login Password</mat-label>
+                    <mat-icon matSuffix class="secondary-text">vpn_key</mat-icon>
+                    <input name="token" type="password" formControlName="password" placeholder="New Password" matInput >
+                    <mat-hint>At least 8 characters mixed with alphanumeric numbers.</mat-hint>
+                    <mat-error *ngIf="userInfoForm.controls.password.hasError('required')">
+                        Password is required
+                    </mat-error>
+                    <mat-error *ngIf="!userInfoForm.controls.password.hasError('required') && userInfoForm.controls.password.hasError('pattern')">
+                        Password must be alphanumberic with minumum 8 characters.
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <div class="" fxLayout="row" fxLayoutAlign="start start">
+
+                <mat-form-field  appearance="outline" fxFlex>
+                    <mat-label>Confirm Password</mat-label>
+                    <mat-icon matSuffix class="secondary-text">vpn_key</mat-icon>
+                    <input name="tokenc" type="password" formControlName="passwordConfirm" placeholder="Confirm Password" matInput >
+                    <mat-error *ngIf="userInfoForm.controls.passwordConfirm.hasError('required')">
+                        confirm password is required.
+                    </mat-error>
+                    <mat-error *ngIf="userInfoForm.controls.passwordConfirm.hasError('passwordsNotMatch')">
+                        Passwords are not match
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+        </form>
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="dialog-action-bar" fxLayout="row" fxLayoutAlign="end center">
+
+        <button
+            mat-button
+            class="save-button mat-accent"
+            (click)="dialogRef.close(false)"
+            aria-label="CANCEL">
+            CANCLE
+        </button>
+        <button  mat-raised-button class="save-button mat-accent"  (click)="validateUserInfoForm()"
+                               >{{ action === 'new' ? 'Add New':'Save Change'}}</button>
+
+    </mat-dialog-actions>

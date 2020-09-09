@@ -1,4 +1,4 @@
-import {HttpClient, HttpRequest, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpRequest, HttpErrorResponse, HttpHeaders, HttpEvent} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import { throwError, of } from 'rxjs';
@@ -28,7 +28,9 @@ export class ApiService {
 
         return this.httpClient
             .get(resourceUrl, {params: query})
-            .pipe(catchError((error: HttpErrorResponse) => of(this.handleError(error))));
+            .pipe(
+                catchError(this.handleError)
+            );
     }
 
     public post(endpoint: string, target: string, param?: string, data?: any): Observable<any> {
@@ -44,7 +46,9 @@ export class ApiService {
 
         return this.httpClient
             .post(resourceUrl, data)
-            .pipe(catchError((error: HttpErrorResponse) => of(this.handleError(error))));
+            .pipe(
+                catchError(this.handleError)
+            );
     }
 
 
@@ -61,7 +65,9 @@ export class ApiService {
 
         return this.httpClient
             .put(resourceUrl, data)
-            .pipe(catchError((error: HttpErrorResponse) => of(this.handleError(error))));
+            .pipe(
+                catchError(this.handleError)
+            );
     }
 
     public delete(endpoint: string, target: string, param?: string, data?: any): Observable<any> {
@@ -80,13 +86,26 @@ export class ApiService {
 
         return this.httpClient
             .delete(resourceUrl, httpOptions)
-            .pipe(catchError((error: HttpErrorResponse) => of(this.handleError(error))));
+            .pipe(
+                catchError(this.handleError)
+            );
     }
 
-    private handleError(error: any): Observable<never> {
-        error = error.error;
-        const errMsg = (error.message) ? error.message : error.status ? `${error.status} - ${error.statusText}` : 'Server error';
+    private handleError(error: HttpErrorResponse): Observable<HttpEvent<any>> {
 
-        return throwError(error);
+        let errorMessage: any;
+        if (error.error instanceof ErrorEvent) {
+            // client-side error
+            errorMessage = `Error: ${error.error.message}`;
+        } else {
+            // The backend returned an unsuccessful response code.
+            // The response body may contain clues as to what went wrong,
+            console.error(
+                `Backend returned code ${error.status}, ` +
+                `body was: ${error.error.message}`);
+            errorMessage = error.error;
+        }
+              // return an observable with a user-facing error message
+        return throwError(errorMessage);
     }
 }

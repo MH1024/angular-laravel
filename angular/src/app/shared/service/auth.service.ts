@@ -6,6 +6,7 @@ import * as moment from 'moment-timezone';
 import {ApiService} from './api.service';
 import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from '@angular/router';
 import {User} from '../../models/user.model';
+import {environment} from '../../../environments/environment';
 
 
 @Injectable({
@@ -15,12 +16,16 @@ export class AuthService implements Resolve<any> {
 
     user: User;
     model: any;
-
+    serverUrl = environment.apiUrl;
+    private iss = {
+        login: this.serverUrl + '/login',
+        signup: this.serverUrl + '/signup'
+    };
     onCurrentUserChange: BehaviorSubject<User> = new BehaviorSubject(this.user);
     onSysMessageChange: BehaviorSubject<any>;
 
     resolve(): Observable<User> {
-        return this.getUser();
+        return this.getCurrentUserInfo();
     }
 
     constructor(
@@ -39,7 +44,7 @@ export class AuthService implements Resolve<any> {
             } else if (this.isActive()) {
                 this.getCurrentUserInfo().subscribe(
                     res => {
-                        this.user = new User(res.data);
+                        this.user = new User(res);
                         this.onCurrentUserChange.next(this.user);
 
                         resolve(true);
@@ -57,7 +62,7 @@ export class AuthService implements Resolve<any> {
 
                         this.getCurrentUserInfo().subscribe(
                             resp => {
-                                this.user = new User(resp.data);
+                                this.user = new User(resp);
                                 this.onCurrentUserChange.next(this.user);
 
                                 resolve(true);
@@ -75,19 +80,30 @@ export class AuthService implements Resolve<any> {
         });
     }
 
+    private getToken() {
+        return localStorage.getItem('token');
+    }
+
+    public removeToken() {
+        return localStorage.removeItem('token');
+    }
+
     private renewToken() {
         return this.apiService.post('auth', 'update');
     }
 
-    public login(username: string, password: string) {
-        return this.apiService.post('auth', 'login', null, {'email': username, 'password': password}).pipe(map(
-            res => {
-                if ( res && res['access_token']) {
-                    this.user = new User();
-                    this.setSession(res);
-                }
-            }
-        ));
+    private payload(token)  {
+        const payload = token.split('.')[1];
+        return this.decode(payload);
+    }
+
+    private decode(payload) {
+        // decodes a base-64 encoded string to get token expire info.
+        return JSON.parse(atob(payload));
+    }
+
+    public login(username: string, password: string): Observable<any> {
+        return this.apiService.post('auth', 'login', null, {'email': username, 'password': password});
     }
 
 
@@ -99,15 +115,32 @@ export class AuthService implements Resolve<any> {
         localStorage.removeItem('token');
         localStorage.removeItem('refresh_expires_at');
         localStorage.removeItem('expires_at');
-        // this.activeContentService.endActiveContent();
+    }
+    private isValidTokenUrl(payload) {
+        if (payload) {
+            const isFromServerUrl = (payload.iss && (Object.values(this.iss).indexOf(payload.iss) > -1)) ? true : false;
+            return isFromServerUrl;
+        } else {
+            return false;
+        }
     }
 
-    private setSession(authResult) {
-        const expiresAt = moment.tz(authResult['expires_in'], 'Australia/Melbourne');
-        const activeAt = moment.tz(authResult['refresh_expires_at'], 'Australia/Melbourne');
-        localStorage.setItem('token', authResult['access_token']);
-        localStorage.setItem('refresh_expires_at', JSON.stringify(activeAt.valueOf()));
-        localStorage.setItem('expires_at', JSON.stringify(expiresAt.valueOf()));
+    public setSession(authResult) {
+        const tokenPayload = this.payload(authResult['token']);
+        const isValid = this.isValidTokenUrl(tokenPayload);
+        if (isValid) {
+            const expiresAtDate  = new Date(Number(tokenPayload['exp']) * 1000);
+            const activeAtDate  = new Date(Number(tokenPayload['iat']) * 1000);
+            const expiresAt = moment.tz(expiresAtDate, 'Australia/Melbourne');
+            const activeAt = moment.tz(activeAtDate, 'Australia/Melbourne');
+            localStorage.setItem('token', authResult['token']);
+            localStorage.setItem('refresh_expires_at', JSON.stringify(activeAt.valueOf()));
+            localStorage.setItem('expires_at', JSON.stringify(expiresAt.valueOf()));
+            return true;
+        } else {
+            this.logout();
+            return false;
+        }
     }
 
     private getStorageTime(itemName: string) {
@@ -140,9 +173,9 @@ export class AuthService implements Resolve<any> {
     }
 
     public updateCurrentUser() {
-        this.apiService.get('auth', 'update').subscribe(
+        this.apiService.get('auth', 'me').subscribe(
             res => {
-                this.user = new User(res.data);
+                this.user = new User(res);
                 this.onCurrentUserChange.next(this.user);
             }
         );
@@ -163,28 +196,39 @@ export class AuthService implements Resolve<any> {
     saveAccountInfo(sendData): Observable<any> {
         return this.apiService.put('auth', 'account/updateAccount', null, sendData);
     }
-    saveNewUser(data): Observable<any> {
-        return this.apiService.post('auth', 'users', null, data);
+    saveUser(action, data): Observable<any> {
+        if (action && action === 'edit') {
+            return this.apiService.post('auth', 'update-user', null, data);
+        } else {
+            return this.apiService.post('auth', 'create-user', null, data);
+        }
+    }
+
+    deleteUser(data): Observable<any> {
+        return this.apiService.delete('auth', 'delete-user', null, data);
+    }
+    changeProfile(data): Observable<any> {
+        return this.apiService.put('auth', 'update-profile', null, data);
     }
     activeUser(data): Observable<any> {
         return this.apiService.put('auth', 'userStatus', null, data);
     }
 
     register(formValue: any): Observable<any> {
-        return this.apiService.post('auth', 'register', null, formValue);
+        return this.apiService.post('auth', 'signup', null, formValue);
     }
 
     updatePassword(oldPassword: string, newPassword: string): Observable<any> {
         return this.apiService.put('user', 'password', null, {old_password: oldPassword, password: newPassword});
     }
 
-    getUsersByPage(data): Observable<any> {
+    getUserList(data): Observable<any> {
         const query = data ? data : null;
-        return this.apiService.get('auth', 'users/list', null, query );
-    }
-    getUser() {
-        return this.apiService.get('auth', 'auth', null) as Observable<any>;
+        return this.apiService.get('auth', 'users-list', null, query );
     }
 
+    changePassword(data): Observable<any> {
+        return this.apiService.post('auth', 'update-password', null, data);
+    }
 
 }

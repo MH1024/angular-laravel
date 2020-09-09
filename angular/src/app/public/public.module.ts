@@ -7,12 +7,27 @@ import { AuthPanelComponent } from './auth-panel/auth-panel.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../shared/service/auth.service';
 import { PageNotFoundComponent } from '../shared/error/page-not-found/page-not-found.component';
+import { InternalServerErrorComponent } from '../shared/error/internal-server-error/internal-server-error.component';
+import { AuthGuard } from '../shared/guard/auth.guard';
 
 
 const publicRoutes: Routes = [
     {
+        path: '',
+        redirectTo: 'login',
+        pathMatch: 'full'
+    },
+    {
         path: 'login',
         component: AuthPanelComponent,
+    },
+    {
+        path: '404',
+        component: PageNotFoundComponent,
+    },
+    {
+        path: '500',
+        component: InternalServerErrorComponent,
     },
     {
         path: '**',
@@ -34,9 +49,6 @@ const publicRoutes: Routes = [
     entryComponents: [],
     providers: [
         AuthService
-    ],
-    exports: [
-        RouterModule
     ],
 })
 export class PublicModule {

@@ -1,0 +1,43 @@
+<div id="edit-profile-panel">
+    <div class="main-content" fxLayout="column" fxLayoutAlign="center center">
+  
+      <div class="card-content">
+        <div class="p-8 auth-error-msg" *ngIf="errorsFromServer && errorsFromServer !== {}">
+          <div class="message-box error" *ngIf="errorsFromServer.message" fxLayout="row"
+            fxLayoutAlign="space-between center">
+            <div [innerHTML]="errorsFromServer.message"></div>
+            <mat-icon class="close-notice" matTooltip="Close" (click)="closeErrorNotice()">close</mat-icon>
+          </div>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="start center">
+          <mat-icon>edit</mat-icon><span class="title">Edit Profile</span>
+        </div>
+  
+        <div>
+          <form class="change-pass-form" name="profileForm" [formGroup]="profileForm" novalidate fxLayout="column"
+            fxLayoutAlign="center start">
+  
+            <mat-form-field appearance="outline" class="input-field">
+              <mat-label>Name</mat-label>
+              <input matInput type="text" placeholder="Name" formControlName="name">
+              <mat-error *ngIf="profileForm.controls.name.hasError('required')">
+                Name is required
+              </mat-error>
+              <mat-error *ngIf="!profileForm.get('name').hasError('required') && (profileForm.get('name').hasError('maxlength') || profileForm.get('name').hasError('minlength'))">
+                Name field is allowed 2-100 Characters
+              </mat-error>
+            </mat-form-field>
+  
+            <div fxLayout="row" fxLayoutAlign="end end" class="input-field">
+              <button mat-raised-button color="accent" class="submit-button" aria-label="CREATE AN ACCOUNT"
+                  (click)="changeProfile()" [disabled]="profileForm.invalid" >
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  
+  </div>
+  
