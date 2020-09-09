@@ -3,20 +3,16 @@
 export class User {
 
     email: string;
-    firstName: string;
-    lastName: string;
-    active: boolean;
+    name: string;
     createdAt: string;
-    updateAt: string;
+    updatedAt: string;
     role: string;
 
     constructor(user?) {
         this.email = (user && user.email) ? user.email : '';
-        this.firstName = (user && user.first_name) ? user.first_name : '';
-        this.lastName = (user && user.last_name) ? user.last_name : '';
-        this.active = (user && user.active) ? user.active : '';
+        this.name = (user && user.name) ? user.name : '';
         this.createdAt = (user && user.created_at) ? user.created_at : '';
-        this.updateAt = (user && user.update_at) ? user.update_at : '';
+        this.updatedAt = (user && user.updated_at) ? user.updated_at : '';
         this.role = (user && user.role) ? user.role : 'visitor';
     }
 

@@ -33,7 +33,7 @@ export class ApiHeaderInterceptor implements HttpInterceptor {
                 }),
                 catchError((error: HttpErrorResponse) => {
                     if (error && error.status === 401) {
-                        this.router.navigate(['/public/login'], );
+                        this.router.navigate(['/login'], );
                     }
                     return throwError(error);
                 }));

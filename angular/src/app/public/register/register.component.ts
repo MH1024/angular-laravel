@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/shared/service/auth.service';
 import { ErrorHandlerService } from 'src/app/shared/service/error-handler.service';
+import { User } from 'src/app/models/user.model';
 
 @Component({
   selector: 'app-register',
@@ -36,39 +37,17 @@ export class RegisterComponent implements OnInit {
   register() {
     const registerFormValue = this.registerForm.getRawValue();
 
-    const flatErrors = (errorsObj) => {
-      const fieldArray = ['name', 'password', 'email'];
-      let innerDiv = '<ul>';
-      for (const fieldName of fieldArray) {
-        if (errorsObj[fieldName] && Array.isArray(errorsObj[fieldName])) {
-          innerDiv += errorsObj[fieldName].reduce((accumulator, currentValue) => {
-            const itemDiv = '<li>' + currentValue + '</li>';
-            return accumulator + itemDiv;
-          }, '');
-          console.log(innerDiv);
-        }
-      }
-      innerDiv += '</ul>';
-      return innerDiv;
-    };
+    
     this.authService.register(registerFormValue).subscribe(
       (resp: any) => {
-        this.router.navigate(['/public/login']);
-        this.registerForm.reset();
-        this.goToLoginPanel.emit('');
-        this.snackBar.open(resp, 'Dismiss', {
-          duration: 5000,
-          horizontalPosition: 'right',
-          verticalPosition: 'top',
-        });
+        this.handleResponse(resp);
       },
       error => {
         if (error) {
           this.errorsFromServer = undefined;
           if (error && error.error) {
-            const errorObj = error.error.errors ? { message: flatErrors(error.error.errors) } : error.error;
+            const errorObj = error.error.errors ? { message: this.errorHandleService.flatErrors(error.error.errors) } : error.error;
             this.errorHandleService.handleError(errorObj);
-            console.log(this.errorHandleService.errorMessage);
             this.errorsFromServer = { message: '<div>' + this.errorHandleService.errorMessage + '</div>' };
           } else {
             this.snackBar.open(
@@ -87,8 +66,32 @@ export class RegisterComponent implements OnInit {
           });
         }
       });
-
   }
+  handleResponse(resData) {
+    if (resData && resData.token) {
+      this.authService.user = new User();
+      const verifyToken = this.authService.setSession(resData);
+      if (verifyToken) {
+        this.router.navigate(['/main/home']);
+      } else {
+        this.switchToLoginPanel();
+      }
+    } else {
+      this.switchToLoginPanel();
+    }
+  }
+  switchToLoginPanel() {
+    this.router.navigate(['/login']);
+    this.registerForm.reset();
+    this.goToLoginPanel.emit('');
+    this.snackBar.open('Register Success, you can login now', 'Dismiss', {
+      duration: 5000,
+      horizontalPosition: 'right',
+      verticalPosition: 'top',
+    });
+  }
+
+
   closeErrorNotice() {
     this.errorsFromServer = undefined;
   }

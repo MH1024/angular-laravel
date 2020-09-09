@@ -1,0 +1,24 @@
+
+
+:host {
+
+    #edit-profile-panel {
+        padding: 32px 32px 0 32px;
+        .main-content {
+            height: inherit;
+            .card-content {
+                width: 100%;
+            .title { 
+                padding-left: 8px;
+            }
+            .change-pass-form {
+                padding: 12px;
+                .input-field {
+                    width: 100%;
+                }
+
+            }
+        }
+        }
+    }
+}

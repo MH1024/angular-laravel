@@ -1,13 +1,14 @@
-<mat-toolbar color="primary">  
+<mat-toolbar color="primary" class="home-toolbar">  
     <mat-toolbar-row>
-      <button mat-button>Home</button>
+      <button mat-icon-button (click)="toggleSideBar()"><mat-icon>menu</mat-icon></button>
+      <span>Hello {{name}}</span>
       <span class="example-spacer"></span>
       <div class="example-icon">
-        <button  mat-icon-button  (click)="logout()">
+        <button  mat-icon-button  (click)="editUserDetails()" matTooltip="Edit User Details">
           <mat-icon aria-hidden="false" aria-label="account icon">account_circle</mat-icon>
         </button>
       </div>
-      <div class="example-icon">
+      <div class="example-icon" matTooltip="Logout">
         <button  mat-icon-button  (click)="logout()">
         <mat-icon   aria-hidden="false" aria-label="logout icon">logout</mat-icon>
       </button>

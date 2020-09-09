@@ -9,6 +9,7 @@ exports.__esModule = true;
 exports.RegisterComponent = void 0;
 var core_1 = require("@angular/core");
 var forms_1 = require("@angular/forms");
+var user_model_1 = require("src/app/models/user.model");
 var RegisterComponent = /** @class */ (function () {
     function RegisterComponent(formBuilder, snackBar, router, authService, errorHandleService) {
         this.formBuilder = formBuilder;
@@ -47,14 +48,7 @@ var RegisterComponent = /** @class */ (function () {
             return innerDiv;
         };
         this.authService.register(registerFormValue).subscribe(function (resp) {
-            _this.router.navigate(['/public/login']);
-            _this.registerForm.reset();
-            _this.goToLoginPanel.emit('');
-            _this.snackBar.open(resp, 'Dismiss', {
-                duration: 5000,
-                horizontalPosition: 'right',
-                verticalPosition: 'top'
-            });
+            _this.handleResponse(resp);
         }, function (error) {
             if (error) {
                 _this.errorsFromServer = undefined;
@@ -79,6 +73,31 @@ var RegisterComponent = /** @class */ (function () {
                     verticalPosition: 'top'
                 });
             }
+        });
+    };
+    RegisterComponent.prototype.handleResponse = function (resData) {
+        if (resData && resData.token) {
+            this.authService.user = new user_model_1.User();
+            var verifyToken = this.authService.setSession(resData);
+            if (verifyToken) {
+                this.router.navigate(['/main/home']);
+            }
+            else {
+                this.switchToLoginPanel();
+            }
+        }
+        else {
+            this.switchToLoginPanel();
+        }
+    };
+    RegisterComponent.prototype.switchToLoginPanel = function () {
+        this.router.navigate(['/login']);
+        this.registerForm.reset();
+        this.goToLoginPanel.emit('');
+        this.snackBar.open('Register Success, you can login now', 'Dismiss', {
+            duration: 5000,
+            horizontalPosition: 'right',
+            verticalPosition: 'top'
         });
     };
     RegisterComponent.prototype.closeErrorNotice = function () {

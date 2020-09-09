@@ -11,18 +11,20 @@ var core_1 = require("@angular/core");
 var forms_1 = require("@angular/forms");
 var user_model_1 = require("src/app/models/user.model");
 var LoginComponent = /** @class */ (function () {
-    function LoginComponent(formBuilder, authService, router, snackBar, errorHandleService) {
+    function LoginComponent(formBuilder, authService, router, snackBar, errorHandleService, activeRoute) {
         this.formBuilder = formBuilder;
         this.authService = authService;
         this.router = router;
         this.snackBar = snackBar;
         this.errorHandleService = errorHandleService;
+        this.activeRoute = activeRoute;
     }
     LoginComponent.prototype.ngOnInit = function () {
         this.loginForm = this.formBuilder.group({
             username: ['', [forms_1.Validators.required]],
             password: ['', forms_1.Validators.required]
         });
+        this.returnUrl = this.activeRoute.snapshot.queryParams['returnUrl'] || '/main/home';
     };
     LoginComponent.prototype.login = function () {
         var _this = this;
@@ -33,12 +35,8 @@ var LoginComponent = /** @class */ (function () {
         var password = this.loginForm.get('password').value.trim();
         if (username && password) {
             this.authService.login(username, password).subscribe(function (res) {
-                if (res && res['access_token']) {
-                    _this.authService.user = new user_model_1.User();
-                    _this.authService.setSession(res);
-                }
                 _this.errorsFromServer = undefined;
-                _this.router.navigate(['/main/home']);
+                _this.handleResponse(res);
             }, function (error) {
                 _this.errorsFromServer = undefined;
                 if (error && error.error) {
@@ -48,7 +46,7 @@ var LoginComponent = /** @class */ (function () {
                 else {
                     _this.snackBar.open('Server Error', 'CLOSE', {
                         duration: 3000,
-                        horizontalPosition: 'right',
+                        horizontalPosition: 'center',
                         verticalPosition: 'top'
                     });
                 }
@@ -57,9 +55,25 @@ var LoginComponent = /** @class */ (function () {
         else {
             this.snackBar.open('Username or Password can not be empty. Please Check', 'CLOSE', {
                 duration: 3000,
-                horizontalPosition: 'right',
+                horizontalPosition: 'center',
                 verticalPosition: 'top'
             });
+        }
+    };
+    LoginComponent.prototype.handleResponse = function (resData) {
+        if (resData && resData.token) {
+            this.authService.user = new user_model_1.User();
+            var verifyToken = this.authService.setSession(resData);
+            if (verifyToken) {
+                this.router.navigate([this.returnUrl]);
+            }
+            else {
+                this.snackBar.open('Something wrong, Please try again', 'CLOSE', {
+                    duration: 3000,
+                    horizontalPosition: 'center',
+                    verticalPosition: 'top'
+                });
+            }
         }
     };
     LoginComponent.prototype.closeErrorNotice = function () {

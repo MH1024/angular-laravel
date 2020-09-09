@@ -7,8 +7,8 @@ const routes: Routes = [
         loadChildren: './main/main.module#MainModule',
     },
     {
-        path: 'public',
-        loadChildren: './public/public.module#PublicModule',
+        path: '',
+        loadChildren: './public/public.module#PublicModule'
     }
 ];
 

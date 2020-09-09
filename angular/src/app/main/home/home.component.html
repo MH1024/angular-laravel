@@ -1,2 +1,28 @@
-<app-nav-bar></app-nav-bar>
-<p>home works!</p>
+
+<div class="home-container" [class.example-is-mobile]="mobileQuery.matches">
+<app-nav-bar (toggleSideNav)="snav.toggle()"></app-nav-bar>
+    <!-- SIDEBAR -->
+    <mat-sidenav-container class="home-sidenav-container"
+                         [style.marginTop.px]="56">
+        <mat-sidenav #snav [mode]="mobileQuery.matches ? 'over' : 'side'" 
+                        [fixedInViewport]="mobileQuery.matches" fixedTopGap="56"> 
+
+            <!-- SIDEBAR NAV -->
+            <mat-nav-list>
+                <app-home-sidenav-group *ngFor="let item of sideMenuItems"
+                                                [item]="item"></app-home-sidenav-group>
+            </mat-nav-list>
+            <!-- / SIDEBAR NAV -->
+
+        </mat-sidenav>
+    
+        
+
+        <!-- CONTENT -->
+        <mat-sidenav-content>
+            <router-outlet></router-outlet>
+        </mat-sidenav-content>
+        <!-- / CONTENT -->
+    </mat-sidenav-container>
+    <!-- / SIDEBAR -->
+</div>

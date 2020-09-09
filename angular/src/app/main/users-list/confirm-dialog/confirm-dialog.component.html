@@ -1,0 +1,34 @@
+
+    <mat-toolbar matDialogTitle class="mat-accent m-0">
+      <div fxFlex fxLayout="row" fxLayoutAlign="space-between center">
+        <span class="title dialog-title">{{confirmTitle}}</span>
+        <button mat-button class="mat-icon-button" (click)="dialogRef.close()" aria-label="Close dialog">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </mat-toolbar>
+
+    <mat-dialog-content class="user-form-panel" >
+      <div class="content-card mat-white-bg">
+        <div class="p-8 auth-error-msg" *ngIf="errorsFromServer && errorsFromServer !== {}">
+            <div class="message-box error" *ngIf="errorsFromServer.message" fxLayout="row" fxLayoutAlign="space-between center">
+                <div [innerHTML]="errorsFromServer.message"></div>
+                <mat-icon  class="close-notice" matTooltip="Close" (click)="closeErrorNotice()">close</mat-icon>
+            </div>
+        </div>
+        
+        <div class="content">
+          <span class="mat-title p-24" fxLayoutAlign="center center">{{confirmMessage}}</span>
+        </div>
+      </div>
+    </mat-dialog-content>
+  <mat-dialog-actions class="dialog-action-bar"  fxLayout="row" fxLayoutAlign="end center">
+    <button
+            mat-button
+            class="save-button mat-warn"
+            (click)="dialogRef.close()"
+            aria-label="CANCEL">
+      CANCLE
+    </button>
+    <button mat-raised-button color="accent"  (click)="submit()" >Confirm</button>
+  </mat-dialog-actions>

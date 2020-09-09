@@ -11,6 +11,21 @@ export class ErrorHandlerService {
 
   constructor(private router: Router) { }
 
+  public flatErrors(errorsObj) {
+    const fieldArray = ['name', 'password', 'email'];
+    let innerDiv = '<ul>';
+    for (const fieldName of fieldArray) {
+      if (errorsObj[fieldName] && Array.isArray(errorsObj[fieldName])) {
+        innerDiv += errorsObj[fieldName].reduce((accumulator, currentValue) => {
+          const itemDiv = '<li>' + currentValue + '</li>';
+          return accumulator + itemDiv;
+        }, '');
+      }
+    }
+    innerDiv += '</ul>';
+    return innerDiv;
+  }
+
   public handleError(error: any) {
     if (error.status_code === 500) {
       this.handle500Error(error);
@@ -23,12 +38,12 @@ export class ErrorHandlerService {
 
   private handle500Error(error: any) {
     this.createErrorMessage(error);
-    this.router.navigate(['public/500']);
+    this.router.navigate(['/500']);
   }
 
   private handle404Error(error: any) {
     this.createErrorMessage(error);
-    this.router.navigate(['public/404']);
+    this.router.navigate(['/404']);
   }
 
   private handleOtherError(error) {
