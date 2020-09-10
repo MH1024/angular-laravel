@@ -23,8 +23,14 @@ class AdminController extends Controller
 
     public function index(Request $request)
     {
+        $query = $request->get('query');
+        $query = str_replace(" ", "%", $query);
+        $sort_by = $request->get('sortby') ? $request->get('sortby') : 'id';
+        $sort_type = $request->get('sorttype') ? $request->get('sorttype') : 'desc';
         $data = User::query()
-            ->orderBy('id','desc')
+            ->orderBy($sort_by, $sort_type)
+            ->where('name', 'like', '%'.$query.'%')
+            ->orWhere('email', 'like', '%'.$query.'%')
             ->paginate($request->query('size') ? $request->query('size') : 30, ['*'], 'pageIndex', $request->has('pageIndex') ? ($request->pageIndex + 1) : 1)->toArray();
 
         return response()->json($data);
@@ -80,25 +86,18 @@ class AdminController extends Controller
             'data' => ['success' => true, 'message' => 'user has been deleted']]);
     }
     // search, filter and sorting contacts
-    function fetch_data(User $contact, Request $request)
+    function fetch_data(Request $request)
     {
-        if($request->ajax())
-        {
-            $output = '';
-            $query = $request->get('query');
-            $query = str_replace(" ", "%", $query);
-            $sort_by = $request->get('sortby');
-            $sort_type = $request->get('sorttype');
+        $query = $request->get('query');
+        $query = str_replace(" ", "%", $query);
+        $sort_by = $request->get('sortby') ? $request->get('sortby') : 'id';
+        $sort_type = $request->get('sorttype') ? $request->get('sorttype') : 'desc';
+        $data = User::query()
+            ->orderBy($sort_by, $sort_type)
+            ->where('name', 'like', '%'.$query.'%')
+            ->orWhere('email', 'like', '%'.$query.'%')
+            ->paginate($request->query('size') ? $request->query('size') : 30, ['*'], 'pageIndex', $request->has('pageIndex') ? ($request->pageIndex + 1) : 1)->toArray();
 
-            $data = $contact
-                ->where('name', 'like', '%'.$query.'%')
-                ->orWhere('mobile', 'like', '%'.$query.'%')
-                ->orWhere('email', 'like', '%'.$query.'%')
-                ->orWhere('postcode', 'like', '%'.$query.'%')
-                ->orderBy($sort_by, $sort_type)
-                ->get();
-            
-            $total_row = $data->count();
-        }
+        return response()->json($data);
     }
 }

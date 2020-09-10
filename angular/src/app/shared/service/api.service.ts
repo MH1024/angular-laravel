@@ -94,6 +94,7 @@ export class ApiService {
     private handleError(error: HttpErrorResponse): Observable<HttpEvent<any>> {
 
         let errorMessage: any;
+
         if (error.error instanceof ErrorEvent) {
             // client-side error
             errorMessage = `Error: ${error.error.message}`;
