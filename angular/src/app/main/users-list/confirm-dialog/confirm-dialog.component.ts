@@ -1,7 +1,9 @@
 import { Inject, Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatSnackBar } from '@angular/material';
+import { Observable } from 'rxjs';
 import { AuthService } from 'src/app/shared/service/auth.service';
 import { ErrorHandlerService } from 'src/app/shared/service/error-handler.service';
+import { PostService } from '../../services/post.services';
 
 @Component({
   selector: 'app-confirm-dialog',
@@ -11,23 +13,25 @@ import { ErrorHandlerService } from 'src/app/shared/service/error-handler.servic
 })
 export class ConfirmDialogComponent implements OnInit {
   consignment: any;
-  bulkSubmitProcessing = false;
   sendData: any;
-  confirmMessage: any;
-  confirmTitle: any;
-  userID: any;
+  confirmMessage: string;
+  confirmTitle: string;
+  confirmInfo: any;
   errorsFromServer: any;
+  action: string;
 
   constructor(
     public dialogRef: MatDialogRef<ConfirmDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private snackBar: MatSnackBar,
     private authService: AuthService,
+    private postService: PostService,
     private errorHandleService: ErrorHandlerService
   ) {
-    this.confirmMessage = data.confirmMessage;
-    this.confirmTitle = data.confirmTitle;
-    this.userID = data.userID;
+    this.confirmInfo = data.confirmInfo;
+    this.confirmMessage = this.confirmInfo.confirmMessage;
+    this.confirmTitle = this.confirmInfo.confirmTitle;
+    this.action = data.action;
   }
 
   ngOnInit() {
@@ -38,8 +42,20 @@ export class ConfirmDialogComponent implements OnInit {
   }
 
   submit() {
-    const selectedUserID = { user_id: this.userID };
-    this.authService.deleteUser(selectedUserID).subscribe(
+    const confirmObservable = (action, deleteObj): Observable<any> => {
+      switch (action) {
+        case 'delete-user':
+          const selectedUserID = { user_id: deleteObj.userID };
+          return this.authService.deleteUser(selectedUserID);
+        case 'delete-post':
+          const selectedPostID = { post_id: deleteObj.postID };
+          return this.postService.deletePost(selectedPostID);
+          break;
+        default:
+          break;
+      }
+    };
+    confirmObservable(this.action, this.confirmInfo).subscribe(
       (res) => {
         if (res && res.status && res.status === 'ok') {
 

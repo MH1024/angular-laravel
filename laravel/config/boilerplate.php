@@ -90,6 +90,15 @@ return [
         'validation_rules' => [
             'name' => 'required|string|between:2,100'
         ]
+    ],
+    // these options are related to the update procedure
+    'post' => [
+
+        // here you can specify some validation rules for your sign-in request
+        'validation_rules' => [
+            'title' => 'required|string|between:2,100',
+            'body' => 'required|min:3'
+        ]
     ]
 
 ];

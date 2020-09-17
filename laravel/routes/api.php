@@ -19,11 +19,19 @@ $api->version('v1', function (Router $api) {
     
         $api->post('update-password', 'App\\Api\\V1\\Controllers\\UserController@updatePassword');
         $api->put('update-profile', 'App\\Api\\V1\\Controllers\\UserController@update');
-
+        // get user role
+        $api->get('user/permissions', 'App\\Api\\V1\\Controllers\\PermissionsController@index');
+        // admin manager user
         $api->get('users-list', 'App\\Api\\V1\\Controllers\\AdminController@index');
         $api->post('create-user', 'App\\Api\\V1\\Controllers\\AdminController@create');
         $api->post('update-user', 'App\\Api\\V1\\Controllers\\AdminController@update');
         $api->delete('delete-user', 'App\\Api\\V1\\Controllers\\AdminController@destroy');
+        // manager post content
+        $api->get('post-list', 'App\\Api\\V1\\Controllers\\PostController@index');
+        $api->get('my-post-list', 'App\\Api\\V1\\Controllers\\PostController@show');
+        $api->post('create-post', 'App\\Api\\V1\\Controllers\\PostController@store');
+        $api->post('update-post', 'App\\Api\\V1\\Controllers\\PostController@update');
+        $api->delete('delete-post', 'App\\Api\\V1\\Controllers\\PostController@destroy');
     });
 
     $api->group(['middleware' => 'jwt.auth'], function(Router $api) {

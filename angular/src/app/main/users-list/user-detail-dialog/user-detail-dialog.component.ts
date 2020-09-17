@@ -11,7 +11,6 @@ import { ErrorHandlerService } from 'src/app/shared/service/error-handler.servic
   encapsulation: ViewEncapsulation.None,
 })
 export class UserDetailDialogComponent implements OnInit {
-  dataSource: any;
   dialogTitle: string;
   userDetailsInfo: any;
   userInfoForm: FormGroup;

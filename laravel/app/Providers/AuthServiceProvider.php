@@ -13,7 +13,8 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        'App\Model' => 'App\Policies\ModelPolicy',
+       // 'App\Model' => 'App\Policies\ModelPolicy',
+        \App\Models\Post::class => \App\Policies\PostPolicy::class,
     ];
 
     /**
@@ -24,7 +25,15 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+       
+        Gate::guessPolicyNamesUsing(function ($modelClass) {
+            // return Policy e.g. 'App\Model\User' => 'App\Policies\UserPolicy',
+            return 'App\Policies\\'.class_basename($modelClass).'Policy';
+        });
 
-        //
+/*         \Horizon::auth(function ($request) {
+            // is founder(super admin) or not
+            return \Auth::user()->hasRole('Founder');
+        }); */
     }
 }

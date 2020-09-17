@@ -1,0 +1,64 @@
+<div style="padding: 13px;" id="list-top" fxLayout="column" fxLayoutAlign="start center" >
+    <div class="post-list-header" fxLayout="row" fxLayoutAlign="start center">
+        <div class="add-user-btn">
+          <button mat-fab color="accent" 
+              (click)="openPostDialog('new')">
+          <mat-icon>note_add</mat-icon>
+          </button>
+        </div>
+        
+        
+          <form [formGroup]="searchForm" class="search-field">
+                <mat-form-field floatPlaceholder="never"  class="search-field" appearance="outline">
+                  <mat-label>Filter</mat-label>
+                    <input id="search" matInput [(ngModel)]="searchVal"  formControlName="search"
+                           type="search"
+                           (keydown.enter)="applyFilter($event.target.value)"
+                           placeholder="Filter">
+                </mat-form-field>
+          </form>
+          
+    </div>
+    <mat-card *ngIf="postsList && postsList.length === 0" class="post-item" >
+        <mat-card-header>
+            <mat-card-title class="post-title" fxLayout="row" fxLayoutAlign="start center">
+                <span> No Record</span>
+            </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <div class="post-content">
+                <p>
+                    {{ (searchForm && searchForm.controls?.search?.value) ? 'Can not find any matched note.' : 'You can click add a note button to add one' }}
+                </p>
+            </div>
+        </mat-card-content>
+        <mat-card-actions>
+            
+        </mat-card-actions>
+    </mat-card>
+
+    <mat-card *ngFor="let post of postsList" class="post-item" >
+        <mat-card-header>
+            <mat-card-title class="post-title" fxLayout="row" fxLayoutAlign="start center">
+                <span>{{post.title}}</span>
+            </mat-card-title>
+            <mat-card-subtitle>{{post.createdAt | date: 'mediumDate'}}
+            </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+            <div class="post-content">
+                <p>
+                    {{post.body}}
+                </p>
+            </div>
+        </mat-card-content>
+        <mat-card-actions>
+            <div class="post-action-panel" fxLayout="row" fxLayoutAlign="start center">
+                 <button matTooltip="Click to Edit" mat-button color="primary" (click)="openPostDialog('edit', post)">EDIT</button>
+                <button mat-button color="warn" (click)="deletePostDialog(post)">DELETE</button>
+            </div>
+        </mat-card-actions>
+    </mat-card>
+    <mat-paginator [fxHide]="postsList && postsList.length === 0" [length]="postsCount" [pageIndex]="0" [pageSize]="10" [pageSizeOptions]="[ 2, 10, 50, 100]"
+    showFirstLastButtons></mat-paginator>
+</div>

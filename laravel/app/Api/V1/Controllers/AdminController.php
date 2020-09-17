@@ -19,6 +19,8 @@ class AdminController extends Controller
     public function __construct()
     {
         $this->middleware('jwt.auth', []);
+        $this->middleware(['role:Founder','permission:manage_users']);
+
     }
 
     public function index(Request $request)
@@ -49,10 +51,6 @@ class AdminController extends Controller
             'status' => 'ok',
             'data' => ['success' => true, 'message' => 'user has been create']
         ], 201);
-
-        return response()->json([
-            'status' => 'ok',
-            'data' => ['success' => true, 'message' => 'user has been updated', 'user' => $user]]);
        
     }
 

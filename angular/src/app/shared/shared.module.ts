@@ -8,6 +8,8 @@ import { CommonModule } from '@angular/common';
 import { PageNotFoundComponent } from './error/page-not-found/page-not-found.component';
 import { InternalServerErrorComponent } from './error/internal-server-error/internal-server-error.component';
 import { ErrorHandlerService } from './service/error-handler.service';
+import { ErrorDisplayPanelComponent } from './error/error-display-panel/error-display-panel.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
     imports: [
@@ -16,6 +18,7 @@ import { ErrorHandlerService } from './service/error-handler.service';
         ReactiveFormsModule,
         FlexLayoutModule,
         MaterialModule,
+        RouterModule,
     ],
     exports: [
         MaterialModule,
@@ -24,9 +27,14 @@ import { ErrorHandlerService } from './service/error-handler.service';
         FormsModule,
         ReactiveFormsModule,
         PageNotFoundComponent,
-        InternalServerErrorComponent
+        InternalServerErrorComponent,
+        ErrorDisplayPanelComponent
     ],
-    declarations: [PageNotFoundComponent, InternalServerErrorComponent]
+    declarations: [
+        PageNotFoundComponent,
+        InternalServerErrorComponent,
+        ErrorDisplayPanelComponent
+    ]
 })
 export class SharedModule {
     static forRoot(): ModuleWithProviders {
