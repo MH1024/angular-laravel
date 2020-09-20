@@ -5,11 +5,13 @@ namespace App\Models;
 use Hash;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable;
+    use HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -29,6 +31,8 @@ class User extends Authenticatable implements JWTSubject
         'password', 'remember_token',
     ];
 
+    protected $guard_name = 'api';
+
     /**
      * Automatically creates hash for the user password.
      *
@@ -38,6 +42,16 @@ class User extends Authenticatable implements JWTSubject
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = Hash::make($value);
+    }
+    /**
+     * check Post author is current user or not
+     *
+     * @param  string  $value
+     * @return void
+     */
+    public function isAuthorOf($model)
+    {
+        return $this->id == $model->user_id;
     }
 
     /**

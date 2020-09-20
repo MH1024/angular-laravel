@@ -6,10 +6,17 @@
     </button>
   </div>
   
-  <mat-form-field class="search-field" appearance="outline">
-    <mat-label>Filter</mat-label>
-    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
-  </mat-form-field>
+  
+    <form [formGroup]="searchForm" class="search-field">
+          <mat-form-field floatPlaceholder="never"  class="search-field" appearance="outline">
+            <mat-label>Filter</mat-label>
+              <input id="search" matInput [(ngModel)]="searchVal"  formControlName="search"
+                     type="search"
+                     (keydown.enter)="applyFilter($event.target.value)"
+                     placeholder="Filter">
+          </mat-form-field>
+    </form>
+    
 </div>
 
 <div class="table-container mat-elevation-z8">
@@ -18,7 +25,7 @@
 
 
     <ng-container matColumnDef="name">
-      <mat-header-cell  *matHeaderCellDef>User Name</mat-header-cell>
+      <mat-header-cell mat-sort-header  *matHeaderCellDef>User Name</mat-header-cell>
       <mat-cell  *matCellDef="let user">
         <ng-container>
           <span>{{user?.name}}</span>
@@ -27,7 +34,7 @@
     </ng-container>
 
     <ng-container matColumnDef="email">
-      <mat-header-cell  fxHide fxShow.gt-sm *matHeaderCellDef>Email Address (for login)</mat-header-cell>
+      <mat-header-cell mat-sort-header fxHide fxShow.gt-sm *matHeaderCellDef>Email Address (for login)</mat-header-cell>
       <mat-cell fxHide fxShow.gt-sm *matCellDef="let user">
         <ng-container>
           <span>{{user?.email }}</span>
@@ -36,7 +43,7 @@
     </ng-container>
 
     <ng-container matColumnDef="createdAt" >
-      <mat-header-cell fxHide fxShow.gt-sm *matHeaderCellDef>Create At</mat-header-cell>
+      <mat-header-cell mat-sort-header fxHide fxShow.gt-sm *matHeaderCellDef>Create At</mat-header-cell>
       <mat-cell  *matCellDef="let user" fxHide fxShow.gt-sm>
         <div fxLayout="row" fxLayoutAlign="start center">
 

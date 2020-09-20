@@ -14,6 +14,9 @@ import { EditProfileComponent } from './edit-profile/edit-profile.component';
 import { UserDetailDialogComponent } from './users-list/user-detail-dialog/user-detail-dialog.component';
 import { ConfirmDialogComponent } from './users-list/confirm-dialog/confirm-dialog.component';
 import { ErrorHandlerService } from '../shared/service/error-handler.service';
+import { PostsListComponent } from './posts-list/posts-list.component';
+import { PostService } from './services/post.services';
+import { PostDetailDialogComponent } from './posts-list/post-detail-dialog/post-detail-dialog.component';
 
 const homeRoutes: Routes = [
     {
@@ -29,8 +32,20 @@ const homeRoutes: Routes = [
         resolve: {auth: AuthService},
         children: [
             {
+                path: '',
+                redirectTo: 'mynotes'
+            },
+            {
                 path: 'users',
                 component:  UsersListComponent,
+            },
+            {
+                path: 'notes',
+                component:  PostsListComponent,
+            },
+            {
+                path: 'mynotes',
+                component:  PostsListComponent,
             },
             {
                 path: 'profile',
@@ -62,7 +77,9 @@ const homeRoutes: Routes = [
         HomeSidenavGroupComponent,
         EditProfileComponent,
         UserDetailDialogComponent,
-        ConfirmDialogComponent
+        ConfirmDialogComponent,
+        PostsListComponent,
+        PostDetailDialogComponent
     ],
     imports: [
         RouterModule.forChild(homeRoutes),
@@ -73,12 +90,14 @@ const homeRoutes: Routes = [
         NavBarComponent,
         HomeSidenavGroupComponent,
         UserDetailDialogComponent,
-        ConfirmDialogComponent
+        ConfirmDialogComponent,
+        PostDetailDialogComponent
     ],
     providers: [
         AuthService,
         AuthGuard,
-        ErrorHandlerService
+        ErrorHandlerService,
+        PostService
     ],
     exports: [
         RouterModule

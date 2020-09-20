@@ -52,20 +52,38 @@ export class HomeComponent implements OnInit, OnDestroy {
         }]
       },
       {
-        displayName: 'Bookings',
+        displayName: 'My Notes',
         iconName: 'apps',
-        route: 'main/home/bookings',
+        route: 'main/home/mynotes',
         children: []
       }
     ];
-    if (this.user && this.user.role && this.user.role === 'admin') {
+    if (this.user && this.user.roles && Array.isArray(this.user.roles) && this.user.roles.length) {
       const multiAccountsManagement = {
         displayName: 'User Management',
         iconName: 'group',
         route: 'main/home/users',
         children: []
       };
-      menuArray.push(multiAccountsManagement);
+      const contentManagement = {
+        displayName: 'Notes Content Management',
+        iconName: 'book',
+        route: 'main/home/notes',
+        children: []
+      };
+
+      const currentUserRole = this.user.roles[0];
+      switch (currentUserRole.name) {
+        case 'Founder':
+          menuArray.push(multiAccountsManagement);
+          menuArray.push(contentManagement);
+          break;
+        case 'Maintainer':
+          menuArray.push(contentManagement);
+          break;
+        default:
+          break;
+      }
     }
     this.sideMenuItems = menuArray;
   }

@@ -23,7 +23,8 @@ export class HomeSidenavGroupComponent implements OnInit, OnDestroy {
   @Input() depth: number;
   mainMenuItems = [
     'User Management',
-    'Bookings'
+    'My Notes',
+    'Notes Content Management'
   ];
   subscribeRoute: any;
 

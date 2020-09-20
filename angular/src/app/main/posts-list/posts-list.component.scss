@@ -1,0 +1,43 @@
+.search-field {
+  width: 100%;
+}
+
+.post-list-header {
+  padding-top: 32px;
+  width: 100%;
+  max-width: 900px;
+}
+
+.table-container {
+  margin: 0 32px 32px 32px;
+}
+
+.add-user-btn {
+  padding-right: 12px;
+  padding-bottom: 24px;
+}
+
+.post-item {
+  margin-top: 10px;
+  max-width: 900px;
+  width: 100%;
+  padding: 0 9px;
+}
+
+.post-content {
+  margin: 0 16px;
+}
+
+.post-title {
+    min-height: 40px;
+    .post-edit-btn {
+        display: none;
+    }
+    &:hover .post-edit-btn {
+        padding-left: 12px;
+        display: unset;
+    }
+}
+.post-action-panel{
+    padding: 0px 8px 18px 8px;
+}

@@ -6,14 +6,14 @@ export class User {
     name: string;
     createdAt: string;
     updatedAt: string;
-    role: string;
+    roles: any;
 
     constructor(user?) {
         this.email = (user && user.email) ? user.email : '';
         this.name = (user && user.name) ? user.name : '';
         this.createdAt = (user && user.created_at) ? user.created_at : '';
         this.updatedAt = (user && user.updated_at) ? user.updated_at : '';
-        this.role = (user && user.role) ? user.role : 'visitor';
+        this.roles = (user && user.roles && Array.isArray(user.roles) && user.roles.length) ? user.roles : [];
     }
 
 }

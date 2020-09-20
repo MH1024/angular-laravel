@@ -1,0 +1,70 @@
+
+    <mat-toolbar mat-dialog-title class="mat-primary m-0">
+        <mat-toolbar-row fxLayout="row" fxLayoutAlign="space-between center">
+            <span class="title dialog-title">{{dialogTitle}}</span>
+            <button mat-button class="mat-icon-button"
+                    (click)="dialogRef.close(false)"
+                    aria-label="Close dialog">
+                <mat-icon>close</mat-icon>
+            </button>
+        </mat-toolbar-row>
+    </mat-toolbar>
+    <mat-dialog-content class="post-form-panel" >
+        <div class="p-8 auth-error-msg" *ngIf="errorsFromServer && errorsFromServer !== {}">
+            <div class="message-box error" *ngIf="errorsFromServer.message" fxLayout="row" fxLayoutAlign="space-between center">
+                <div [innerHTML]="errorsFromServer.message"></div>
+                <mat-icon  class="close-notice" matTooltip="Close" (click)="closeErrorNotice()">close</mat-icon>
+            </div>
+        </div>
+        <form [formGroup]="postInfoForm" novalidate>
+
+            <div class="" fxLayout="row" fxLayoutAlign="start start">
+
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Title</mat-label>
+                    <mat-icon matSuffix class="secondary-text">label</mat-icon>
+                    <input name="title" formControlName="title" placeholder="" matInput required>
+                    <mat-error *ngIf="postInfoForm.controls.title.hasError('required')">
+                       Title is required.
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            <div class="" fxLayout="row" fxLayoutAlign="start start">
+                <mat-form-field appearance="outline" fxFlex>
+                    <mat-label>Excerpt(optional)</mat-label>
+                    <mat-icon matSuffix class="secondary-text">bookmark</mat-icon>
+                    <input name="excerpt" formControlName="excerpt" placeholder="" matInput >
+                </mat-form-field>
+            </div>
+            <div class="" fxLayout="row" fxLayoutAlign="start start">
+
+                <mat-form-field appearance="outline"  fxFlex>
+                    <mat-label>Content</mat-label>
+                    <textarea name="body" formControlName="body" matInput required></textarea>
+                    <mat-error *ngIf="postInfoForm.controls.body.hasError('required')">
+                        body is required.
+                    </mat-error>
+                    <mat-error *ngIf="!postInfoForm.hasError('required') && postInfoForm.hasError('minlength')">
+                       Please input at lease 3 character.
+                    </mat-error>
+                </mat-form-field>
+            </div>
+            
+
+        </form>
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="dialog-action-bar" fxLayout="row" fxLayoutAlign="end center">
+
+        <button
+            mat-button
+            class="save-button mat-accent"
+            (click)="dialogRef.close(false)"
+            aria-label="CANCEL">
+            CANCLE
+        </button>
+        <button  mat-raised-button class="save-button mat-accent"  (click)="savePostInfoForm()"
+                               >{{ action === 'new' ? 'Add New':'Save Change'}}</button>
+
+    </mat-dialog-actions>

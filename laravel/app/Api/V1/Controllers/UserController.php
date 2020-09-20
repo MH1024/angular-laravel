@@ -34,7 +34,9 @@ class UserController extends Controller
      */
     public function me()
     {
-        return response()->json(Auth::guard()->user());
+        $user = Auth::guard()->user();
+        $user->getRoleNames();
+        return response()->json($user);
     }
     /**
      * Update User Profile.

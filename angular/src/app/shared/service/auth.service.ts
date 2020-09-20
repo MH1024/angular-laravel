@@ -56,8 +56,8 @@ export class AuthService implements Resolve<any> {
             } else {
                 this.renewToken().subscribe(
                     res => {
-                        if (res['data']) {
-                            this.setSession(res['data']);
+                        if (res) {
+                            this.setSession(res);
                         }
 
                         this.getCurrentUserInfo().subscribe(
@@ -88,8 +88,8 @@ export class AuthService implements Resolve<any> {
         return localStorage.removeItem('token');
     }
 
-    private renewToken() {
-        return this.apiService.post('auth', 'update');
+    private renewToken(): Observable<any> {
+        return this.apiService.post('auth', 'refresh');
     }
 
     private payload(token)  {

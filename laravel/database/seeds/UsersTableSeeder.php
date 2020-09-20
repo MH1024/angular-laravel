@@ -15,12 +15,26 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         DB::table('users')->delete();
-        // DB::table('users')->insert([
-        //     'name' => 'admin',
-        //     'email' => 'test@test.com',
-        //     'email_verified_at' => now(),
-        //     'password' => Hash::make('password'),
-        // ]);
-        factory(App\Models\User::class, 20)->create();
+        DB::table('users')->insert([
+            'name' => 'Founder',
+            'email' => 'founder@test.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password1'),
+        ]);
+        DB::table('users')->insert([
+            'name' => 'Maintainer',
+            'email' => 'maintainer@test.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password2'),
+        ]);
+        factory(App\Models\User::class, 18)->create();
+        $f_user = User::where(['email' => 'founder@test.com'])->get()->first();
+        $m_user = User::where(['email' => 'maintainer@test.com'])->get()->first();
+        // set founder
+        $f_user->assignRole('Founder');
+
+        // set maintainer
+        $m_user->assignRole('Maintainer');
+        
     }
 }

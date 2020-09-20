@@ -1,0 +1,28 @@
+
+.app-post-detail-dialog {
+    min-width: 600px;
+    
+
+    .mat-dialog-container {
+        padding: 0;
+        overflow: hidden;
+        height: 100%;
+      
+
+        
+        .post-form-panel {
+            padding: 24px;
+            margin: 0px;
+        }
+    }
+
+    .dialog-content-wrapper {
+        display: flex;
+        flex-direction: column;
+    }
+    
+}
+.dialog-action-bar {
+        padding: 0 16px 16px 16px;
+        margin: 0px;
+}

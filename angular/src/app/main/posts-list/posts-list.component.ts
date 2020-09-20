@@ -1,94 +1,76 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Post } from 'src/app/models/post.model';
 import { MatDialogConfig, MatDialog, MatPaginator, MatSnackBar, MatSort } from '@angular/material';
-import { UserDetailDialogComponent } from './user-detail-dialog/user-detail-dialog.component';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/app/shared/service/auth.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { User } from 'src/app/models/user.model';
 import { ErrorHandlerService } from 'src/app/shared/service/error-handler.service';
 import { tap } from 'rxjs/operators';
-import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { ConfirmDialogComponent } from '../users-list/confirm-dialog/confirm-dialog.component';
+import { PostService } from '../services/post.services';
+import { PostDetailDialogComponent } from './post-detail-dialog/post-detail-dialog.component';
+
 
 @Component({
-  selector: 'app-users-list',
-  templateUrl: './users-list.component.html',
-  styleUrls: ['./users-list.component.scss']
+  selector: 'app-posts-list',
+  templateUrl: './posts-list.component.html',
+  styleUrls: ['./posts-list.component.scss']
 })
-export class UsersListComponent implements OnInit, OnDestroy {
+export class PostsListComponent implements OnInit, OnDestroy {
 
-  displayedColumns = ['name', 'email', 'role', 'createdAt', 'actions'];
+
   data: any;
-  user: User;
+  user: Post;
   account: Account;
   loadingSubject = new BehaviorSubject<boolean>(false);
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
   paginatorSubscription: Subscription;
-  sortSubscription: Subscription;
   loading$ = this.loadingSubject.asObservable();
-  userList: any;
+  postsList: any;
   loadingList = false;
   errorsFromServer: any;
-  usersCount = 0;
+  postsCount = 0;
   searchForm: FormGroup;
   searchVal: any;
   constructor(
     public dialog: MatDialog,
     private activeRoute: ActivatedRoute,
-    private authService: AuthService,
     private snackBar: MatSnackBar,
     private errorHandleService: ErrorHandlerService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private postService: PostService
   ) {
 
   }
 
   ngOnInit() {
 
-    this.loadUserList();
-    const combineSortAndSearch = () => {
-      const searchCondition = this.searchForm.controls['search'].value;
-      const searchParams = searchCondition ? { search: searchCondition.trim() } : {};
-      if (this.sort.active && this.sort.direction) {
-        const params = {
-          sortby: this.sort.active,
-          sorttype: this.sort.direction
-        };
-        const result = Object.assign(params, searchParams);
-        this.loadUserList(result);
-      } else {
-        this.loadUserList(searchParams);
-      }
-    };
+    this.loadPostList();
+
     this.paginatorSubscription = this.paginator.page
       .pipe(
         tap(() => {
-          combineSortAndSearch();
+          const searchCondition = this.searchForm.controls['search'].value;
+          const searchParams = searchCondition ? { search: searchCondition.trim() } : {};
+          this.loadPostList(searchParams);
         })
       ).subscribe();
-
-    this.sortSubscription = this.sort.sortChange
-      .pipe(
-        tap(() => {
-          combineSortAndSearch();
-        })).subscribe();
     this.searchForm = this.formBuilder.group({
       search: new FormControl(''),
     });
 
   }
+
   ngOnDestroy() {
     if (this.paginatorSubscription) {
       this.paginatorSubscription.unsubscribe();
     }
-    if (this.sortSubscription) {
-      this.sortSubscription.unsubscribe();
-    }
   }
 
 
-  openUserDialog(action, userDetails?) {
+  openPostDialog(action, postDetails?) {
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.autoFocus = false;
@@ -98,14 +80,14 @@ export class UsersListComponent implements OnInit, OnDestroy {
     dialogConfig.width = '600px';
     dialogConfig.data = {
       action: (action && action === 'new') ? 'new' : 'edit',
-      userInfo: (action && action === 'new') ? null : userDetails
+      postInfo: (action && action === 'new') ? null : postDetails
     };
-    dialogConfig.panelClass = 'app-user-detail-dialog';
-    const dialogNew = this.dialog.open(UserDetailDialogComponent, dialogConfig);
+    dialogConfig.panelClass = 'app-post-detail-dialog';
+    const dialogNew = this.dialog.open(PostDetailDialogComponent, dialogConfig);
     dialogNew.afterClosed()
       .subscribe((response) => {
         if (response) {
-          this.loadUserList();
+          this.loadPostList();
         } else {
           return;
         }
@@ -113,7 +95,7 @@ export class UsersListComponent implements OnInit, OnDestroy {
       });
   }
 
-  loadUserList(queryParam?): void {
+  loadPostList(queryParam?): void {
     this.loadingList = true;
     this.loadingSubject.next(true);
 
@@ -123,22 +105,21 @@ export class UsersListComponent implements OnInit, OnDestroy {
     };
 
     if (queryParam && queryParam !== {}) {
-      const sort = (queryParam['sortby'] && queryParam['sorttype']) ? { sortby: queryParam['sortby'], sorttype: queryParam['sorttype'] } : {};
       const searchParams = queryParam['search'] ? { query: queryParam['search'] } : {};
-      sendObj = Object.assign(sendObj, searchParams, sort);
+      sendObj = Object.assign(sendObj, searchParams);
     } else {
-      delete sendObj['sort'];
-      delete sendObj['sorttype'];
       delete sendObj['query'];
     }
 
-    this.authService.getUserList(sendObj).subscribe(
+    this.postService.getPostsList(sendObj).subscribe(
       res => {
-        this.userList = res.data;
+        this.postsList = res.data.map(
+          item => new Post(item)
+        );
         if (res && res.total) {
-          this.usersCount = res.total;
+          this.postsCount = res.total;
         }
-        const contentContainer = document.querySelector('.mat-table');
+        const contentContainer = document.getElementById('list-top');
         contentContainer.scrollTo(0, 0);
 
         this.loadingSubject.next(false);
@@ -172,7 +153,7 @@ export class UsersListComponent implements OnInit, OnDestroy {
   }
 
 
-  deleteUserDialog(user): void {
+  deletePostDialog(post): void {
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.autoFocus = false;
@@ -181,11 +162,11 @@ export class UsersListComponent implements OnInit, OnDestroy {
     dialogConfig.maxHeight = '300px';
     dialogConfig.width = '400px';
     dialogConfig.data = {
-      action: 'delete-user',
+      action: 'delete-post',
       confirmInfo: {
-        userID: user.id,
-        confirmMessage: 'Confirm to Delte this user: ' + user.name + ' ?',
-        confirmTitle: 'Delete User Confirm'
+        postID: post.id,
+        confirmMessage: 'Confirm to Delte this note ?',
+        confirmTitle: 'Delete note Confirm'
       }
     };
     dialogConfig.panelClass = 'app-confirm-dialog';
@@ -193,7 +174,7 @@ export class UsersListComponent implements OnInit, OnDestroy {
     dialogNew.afterClosed()
       .subscribe((response) => {
         if (response) {
-          this.loadUserList();
+          this.loadPostList();
         } else {
           return;
         }
@@ -208,7 +189,7 @@ export class UsersListComponent implements OnInit, OnDestroy {
       this.patchUsers(searchCondition);
     } else {
       this.paginator.pageIndex = 0;
-      this.loadUserList();
+      this.loadPostList();
     }
   }
   patchUsers(searchQuery) {
@@ -219,11 +200,13 @@ export class UsersListComponent implements OnInit, OnDestroy {
       pageIndex: this.paginator.pageIndex,
       query: searchQuery
     };
-    this.authService.getUserList(paginatorObj).subscribe(
+    this.postService.getPostsList(paginatorObj).subscribe(
       res => {
-        this.userList = res.data;
+        this.postsList = res.data.map(
+          item => new Post(item)
+        );
         if (res && res.total) {
-          this.usersCount = res.total;
+          this.postsCount = res.total;
         }
 
 
